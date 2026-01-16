@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: auth-fluoce-db
+    environment:
+      POSTGRES_USER: auth-fluoce
+      POSTGRES_PASSWORD: auth-fluoce
+      POSTGRES_DB: auth-fluoce
+    ports:
+      - "5432:5432"
+    volumes:
+      - "C:/Users/ashit/OneDrive/temp/docker-volumes/DB/auth-fluoce:/var/lib/postgresql/data"
+
+  redis:
+    image: redis:7-alpine
+    container_name: auth-fluoce-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - "C:/Users/ashit/OneDrive/temp/docker-volumes/redis/auth-fluoce:/data"

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "mobile" DROP NOT NULL,
+ALTER COLUMN "photo" DROP NOT NULL;

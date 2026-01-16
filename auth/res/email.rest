@@ -1,0 +1,55 @@
+### email
+POST http://localhost:3001/email
+Content-Type: application/json
+
+{
+  "email": <email>
+}
+
+
+### verify-email
+POST http://localhost:3001/email/verify
+Content-Type: application/json
+
+{
+  "email": <email>,
+  "otp": <OTP>
+}
+
+
+### google
+POST http://localhost:3001/google
+Content-Type: application/json
+
+{
+  "code": <google's code>
+}
+
+
+### refresh-token
+POST http://localhost:3001/refresh
+Content-Type: application/json
+Authorization: Bearer <refresh-token>
+
+
+### exchange-tokens
+POST http://localhost:3001/exchange
+Content-Type: application/json
+
+{
+  "code": <exchange code>
+}
+
+
+### me
+GET http://localhost:3001/me
+Content-Type: application/json
+Authorization: Bearer <access-token>
+
+
+### logout
+POST http://localhost:3001/logout
+Content-Type: application/json
+Authorization: Bearer <refresh-token>
+
+
