@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ServiceUnavailableException } from '@nestjs/common/exceptions';
-import { GoogleCodeDto } from 'src/types/google.types';
 import { ResponseDataType } from 'src/types/response.type';
 import { googleOauth2Client } from 'src/config/google';
 import { UserService } from 'src/core/user/user.service';
@@ -8,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.service';
 import { generateCode } from 'src/func/generate-code';
 import { RedisService } from 'src/lib/redis/redis.service';
+import { CodeDto } from 'src/types/code.types';
 
 @Injectable()
 export class GoogleService {
@@ -18,7 +18,7 @@ export class GoogleService {
     private readonly redisService: RedisService,
   ) {}
 
-  async google(data: GoogleCodeDto): Promise<ResponseDataType> {
+  async google(data: CodeDto): Promise<ResponseDataType> {
     try {
       const { tokens } = await googleOauth2Client.getToken(data.code);
 

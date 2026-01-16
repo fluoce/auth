@@ -6,7 +6,7 @@ import { useStateContext } from "@/context/State";
 import useAuthApi from "@/api/auth-api";
 
 const GoogleLoginBtn = () => {
-  const { setError, isLoading, refUrl } = useStateContext();
+  const { setError, isLoading, refUrl, setLastUsedSocial } = useStateContext();
 
   const { googleAuth } = useAuthApi();
 
@@ -14,10 +14,13 @@ const GoogleLoginBtn = () => {
     if (result?.code) {
       const success = await googleAuth(result.code);
       if (success && success.code) {
-        if (refUrl) {
+        if (refUrl && /^http(s)?:\/\//.test(refUrl)) {
           window.location.replace(refUrl + `?code=${success?.code}`);
           localStorage.removeItem("refUrl");
+        } else {
+          setError("redirect url not found go back to main site");
         }
+        setLastUsedSocial("google");
       }
     } else {
       setError("Google login failed !");
@@ -34,9 +37,9 @@ const GoogleLoginBtn = () => {
 
   return (
     <SocialBtn
+      onClick={googleLogin}
       icon={<FcGoogle />}
       name={"Google"}
-      onClick={() => googleLogin()}
       isLoding={isLoading}
     />
   );

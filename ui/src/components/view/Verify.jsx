@@ -15,17 +15,21 @@ const Verify = () => {
     formState: { errors },
   } = useForm({});
 
-  const { error, refUrl, user, isLoading, setError } = useStateContext();
+  const { error, refUrl, user, isLoading, setError, setLastUsedSocial } =
+    useStateContext();
 
   const { verifyEmail } = useAuthApi();
 
   const verify = async (data) => {
     const success = await verifyEmail({ otp: data?.otp, email: user?.email });
     if (success && success.code) {
-      if (refUrl) {
+      if (refUrl && /^http(s)?:\/\//.test(refUrl)) {
         window.location.replace(refUrl + `?code=${success?.code}`);
         localStorage.removeItem("refUrl");
+      } else {
+        setError("redirect url not found go back to main site");
       }
+      setLastUsedSocial(null);
     }
   };
 
@@ -67,7 +71,7 @@ const Verify = () => {
                   value={field.value}
                   onChange={field.onChange}
                 >
-                  <InputOTPGroup className="gap-1">
+                  <InputOTPGroup className="gap-2">
                     <InputOTPSlot
                       className="rounded-md border p-5.5"
                       index={0}

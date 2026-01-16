@@ -9,12 +9,11 @@ import FormHeader from "../ui/FormHeader";
 import useAuthApi from "@/api/auth-api";
 import { Button } from "../ui/button";
 import { getHomeUrl } from "@/utils/getRefUrl";
-import Facebook from "../others/Facebook";
-import Apple from "../others/Apple";
 import Github from "../others/Github";
 
 const SignUp = () => {
-  const { error, setRefUrl, refUrl, isLoading } = useStateContext();
+  const { error, setRefUrl, refUrl, isLoading, lastUsedSocial } =
+    useStateContext();
 
   const { emailAuth } = useAuthApi();
 
@@ -74,6 +73,21 @@ const SignUp = () => {
             {errors.email.message}
           </span>
         )}
+        {lastUsedSocial && ["google", "github"].includes(lastUsedSocial) && (
+          <>
+            <div className="flex items-center justify-center gap-1">
+              <span className="flex-1 border-t"></span>
+              <span className="-mt-1 shrink-0 text-xs font-medium text-zinc-500/50">
+                last used
+              </span>
+              <span className="flex-1 border-t"></span>
+            </div>
+            <div className="rounded-md bg-green-500/20">
+              {lastUsedSocial === "google" && <Google />}
+              {lastUsedSocial === "github" && <Github />}
+            </div>
+          </>
+        )}
         <div className="flex items-center justify-center gap-1">
           <span className="flex-1 border-t"></span>
           <span className="-mt-1 shrink-0 text-xs font-medium text-zinc-500/50">
@@ -81,10 +95,8 @@ const SignUp = () => {
           </span>
           <span className="flex-1 border-t"></span>
         </div>
-        <div className="grid grid-cols-1 gap-2">
+        <div className="flex flex-col gap-2">
           <Google />
-          <Facebook />
-          <Apple />
           <Github />
         </div>
         {error && (
@@ -94,7 +106,7 @@ const SignUp = () => {
         )}
       </div>
       <div className="flex items-center justify-between gap-2 text-[10px] font-medium text-zinc-400">
-        {refUrl && (
+        {refUrl && /^http(s)?:\/\//.test(refUrl) && (
           <Button
             onClick={() => {
               const url = getHomeUrl(refUrl);
@@ -107,7 +119,7 @@ const SignUp = () => {
             Back
           </Button>
         )}
-        <p className="flex items-center gap-2">
+        <p className="flex w-full items-center justify-end gap-2">
           <span className="hover:text-blue-600 hover:underline">
             Terms of Use
           </span>

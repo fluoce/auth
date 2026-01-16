@@ -3,7 +3,7 @@ import { useStateContext } from "../context/State";
 import { authUrl } from "../configs/auth-url.js";
 
 export default function useAuthApi() {
-  const { setUser, setError, refUrl, setIsLoading } = useStateContext();
+  const { setUser, setError, setIsLoading } = useStateContext();
 
   async function emailAuth(data) {
     setError(null);
@@ -79,9 +79,35 @@ export default function useAuthApi() {
     }
   }
 
+  async function githubAuth(code) {
+    setError(null);
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        `${authUrl}/github`,
+        {
+          code,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      setUser(res?.data?.data);
+      return res.data.data;
+    } catch (error) {
+      setError(
+        error?.response?.data?.message || "Github login failed, try later"
+      );
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return {
     emailAuth,
     verifyEmail,
     googleAuth,
+    githubAuth,
   };
 }

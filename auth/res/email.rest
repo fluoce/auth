@@ -26,6 +26,15 @@ Content-Type: application/json
 }
 
 
+### github
+POST http://localhost:3001/github
+Content-Type: application/json
+
+{
+  "code": <github's code>
+}
+
+
 ### refresh-token
 POST http://localhost:3001/refresh
 Content-Type: application/json

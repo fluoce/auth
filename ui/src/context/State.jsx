@@ -8,6 +8,9 @@ export const StateProvider = ({ children }) => {
   const [refUrl, setRefUrl] = useState(
     () => localStorage.getItem("refUrl") || null
   );
+  const [lastUsedSocial, setLastUsedSocial] = useState(
+    () => localStorage.getItem("lastUsedSocial") || null
+  );
   const [isLoading, setIsLoading] = useState(null);
 
   useEffect(() => {
@@ -16,6 +19,10 @@ export const StateProvider = ({ children }) => {
     }
   }, [refUrl]);
 
+  useEffect(() => {
+    localStorage.setItem("lastUsedSocial", lastUsedSocial);
+  }, [lastUsedSocial]);
+
   const values = {
     user,
     setUser,
@@ -23,6 +30,8 @@ export const StateProvider = ({ children }) => {
     setError,
     refUrl,
     setRefUrl,
+    lastUsedSocial,
+    setLastUsedSocial,
     isLoading,
     setIsLoading,
   };

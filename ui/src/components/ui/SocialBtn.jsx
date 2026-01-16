@@ -7,7 +7,7 @@ const SocialBtn = ({ icon, name, onClick, isLoding, disabled }) => {
       disabled={isLoding || disabled}
       variant="outline"
       onClick={onClick}
-      className="flex w-full items-center gap-2 p-5.5 font-medium"
+      className="flex w-full items-center gap-2 bg-transparent p-5.5 font-medium"
     >
       {icon}
       {name}
