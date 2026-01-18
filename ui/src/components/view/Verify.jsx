@@ -15,7 +15,7 @@ const Verify = () => {
     formState: { errors },
   } = useForm({});
 
-  const { error, refUrl, user, isLoading, setError, setLastUsedSocial } =
+  const { error, refUrl, user, isLoading, setError, setLastUsedSocial, path } =
     useStateContext();
 
   const { verifyEmail } = useAuthApi();
@@ -24,7 +24,7 @@ const Verify = () => {
     const success = await verifyEmail({ otp: data?.otp, email: user?.email });
     if (success && success.code) {
       if (refUrl && /^http(s)?:\/\//.test(refUrl)) {
-        window.location.replace(refUrl + `?code=${success?.code}`);
+        window.location.replace(refUrl + `/auth?code=${success?.code}&path=${path}`);
         localStorage.removeItem("refUrl");
       } else {
         setError("redirect url not found go back to main site");

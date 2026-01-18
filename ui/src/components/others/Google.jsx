@@ -6,7 +6,7 @@ import { useStateContext } from "@/context/State";
 import useAuthApi from "@/api/auth-api";
 
 const GoogleLoginBtn = () => {
-  const { setError, isLoading, refUrl, setLastUsedSocial } = useStateContext();
+  const { setError, isLoading, refUrl, setLastUsedSocial, path } = useStateContext();
 
   const { googleAuth } = useAuthApi();
 
@@ -15,7 +15,7 @@ const GoogleLoginBtn = () => {
       const success = await googleAuth(result.code);
       if (success && success.code) {
         if (refUrl && /^http(s)?:\/\//.test(refUrl)) {
-          window.location.replace(refUrl + `?code=${success?.code}`);
+          window.location.replace(refUrl + `/auth?code=${success?.code}&path=${path}`);
           localStorage.removeItem("refUrl");
         } else {
           setError("redirect url not found go back to main site");
