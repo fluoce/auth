@@ -8,6 +8,9 @@ export const StateProvider = ({ children }) => {
   const [refUrl, setRefUrl] = useState(
     () => localStorage.getItem("refUrl") || null
   );
+  const [path, setPath] = useState(
+    () => localStorage.getItem("path") || null
+  );
   const [lastUsedSocial, setLastUsedSocial] = useState(
     () => localStorage.getItem("lastUsedSocial") || null
   );
@@ -18,6 +21,12 @@ export const StateProvider = ({ children }) => {
       localStorage.setItem("refUrl", refUrl);
     }
   }, [refUrl]);
+
+  useEffect(() => {
+    if (path) {
+      localStorage.setItem("path", path);
+    }
+  }, [path]);
 
   useEffect(() => {
     localStorage.setItem("lastUsedSocial", lastUsedSocial);
@@ -34,6 +43,8 @@ export const StateProvider = ({ children }) => {
     setLastUsedSocial,
     isLoading,
     setIsLoading,
+    path,
+    setPath
   };
 
   return (

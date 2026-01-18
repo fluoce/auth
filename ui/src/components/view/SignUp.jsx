@@ -12,7 +12,7 @@ import { getHomeUrl } from "@/utils/getRefUrl";
 import Github from "../others/Github";
 
 const SignUp = () => {
-  const { error, setRefUrl, refUrl, isLoading, lastUsedSocial } =
+  const { error, setRefUrl, refUrl, isLoading, lastUsedSocial, setPath } =
     useStateContext();
 
   const { emailAuth } = useAuthApi();
@@ -24,10 +24,16 @@ const SignUp = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const ref = params.get("ref");
+    const path = params.get("path");
 
     if (ref) {
       setRefUrl(ref);
     }
+
+    if (path) {
+      setPath(path);
+    }
+
   }, [location.search]);
 
   const {

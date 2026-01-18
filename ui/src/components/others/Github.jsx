@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import useAuthApi from "@/api/auth-api";
 
 const Github = () => {
-  const { isLoading, refUrl, setLastUsedSocial, setIsLoading, setError } =
+  const { isLoading, refUrl, setLastUsedSocial, setIsLoading, setError, path } =
     useStateContext();
 
   const location = useLocation();
@@ -64,8 +64,9 @@ const Github = () => {
       const success = await githubAuth(code);
       if (success && success.code) {
         if (refUrl && /^http(s)?:\/\//.test(refUrl)) {
-          window.location.replace(refUrl + `?code=${success?.code}`);
+          window.location.replace(refUrl + `/auth?code=${success?.code}&path=${path}`);
           localStorage.removeItem("refUrl");
+          localStorage.removeItem("location");
         } else {
           setError("redirect url not found go back to main site");
         }
