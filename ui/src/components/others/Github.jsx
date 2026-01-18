@@ -14,7 +14,6 @@ const Github = () => {
   const { githubAuth } = useAuthApi();
 
   const githubLogin = () => {
-    setIsLoading(true);
     const state = Math.floor(
       100000000000 + Math.random() * 900000000000
     ).toString();
