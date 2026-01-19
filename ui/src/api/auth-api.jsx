@@ -95,7 +95,10 @@ export default function useAuthApi() {
     setError(null);
     if (!refUrl || !/^http(s)?:\/\//.test(refUrl)) {
       setError("redirect url not found go back to main site");
+<<<<<<< HEAD
       setIsLoading(false);
+=======
+>>>>>>> 6e5ee15cdfd7065ec0290c3e31ed1a4cf288850b
       return false;
     }
     setIsLoading(true);
