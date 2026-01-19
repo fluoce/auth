@@ -8,15 +8,23 @@ export const RedisProvider: Provider = {
   useFactory: () => {
     const logger = new Logger('Redis');
 
-    const redis = new Redis({
-      host: process.env.REDIS_HOST || '127.0.0.1',
-      port: Number(process.env.REDIS_PORT || 6379),
-      password: process.env.REDIS_PASSWORD || undefined,
-      db: Number(process.env.REDIS_DB || 0),
-      lazyConnect: true,
-      enableOfflineQueue: false,
-      retryStrategy: () => null,
-    });
+    const redisUrl = process.env.REDIS_URL;
+
+    const redis = redisUrl
+      ? new Redis(redisUrl, {
+        lazyConnect: true,
+        enableOfflineQueue: false,
+        retryStrategy: () => null,
+      })
+      : new Redis({
+        host: process.env.REDIS_HOST || '127.0.0.1',
+        port: Number(process.env.REDIS_PORT || 6379),
+        password: process.env.REDIS_PASSWORD || undefined,
+        db: Number(process.env.REDIS_DB || 0),
+        lazyConnect: true,
+        enableOfflineQueue: false,
+        retryStrategy: () => null,
+      });
 
     redis.on('error', (err) => {
       logger.warn(`Redis unavailable: ${err.message}`);
@@ -30,6 +38,6 @@ export const RedisProvider: Provider = {
       logger.warn('Redis connection failed. Continuing without Redis.');
     });
 
-    return redis
+    return redis;
   },
 };
