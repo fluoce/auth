@@ -3,10 +3,14 @@ import { useStateContext } from "../context/State";
 import { authUrl } from "../configs/auth-url.js";
 
 export default function useAuthApi() {
-  const { setUser, setError, setIsLoading } = useStateContext();
+  const { setUser, setError, setIsLoading, refUrl } = useStateContext();
 
   async function emailAuth(data) {
     setError(null);
+    if (!refUrl || !/^http(s)?:\/\//.test(refUrl)) {
+      setError("redirect url not found go back to main site");
+      return false;
+    }
     setIsLoading(true);
     try {
       const res = await axios.post(
@@ -32,6 +36,10 @@ export default function useAuthApi() {
 
   async function verifyEmail(data) {
     setError(null);
+    if (!refUrl || !/^http(s)?:\/\//.test(refUrl)) {
+      setError("redirect url not found go back to main site");
+      return false;
+    }
     setIsLoading(true);
     try {
       const res = await axios.post(
@@ -56,6 +64,10 @@ export default function useAuthApi() {
 
   async function googleAuth(code) {
     setError(null);
+    if (!refUrl || !/^http(s)?:\/\//.test(refUrl)) {
+      setError("redirect url not found go back to main site");
+      return false;
+    }
     setIsLoading(true);
     try {
       const res = await axios.post(
@@ -81,6 +93,10 @@ export default function useAuthApi() {
 
   async function githubAuth(code) {
     setError(null);
+    if (!refUrl || !/^http(s)?:\/\//.test(refUrl)) {
+      setError("redirect url not found go back to main site");
+      return false;
+    }
     setIsLoading(true);
     try {
       const res = await axios.post(
