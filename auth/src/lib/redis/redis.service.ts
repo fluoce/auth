@@ -10,7 +10,7 @@ export class RedisService {
   constructor(
     @Inject(REDIS_CLIENT)
     private readonly redis: Redis,
-  ) {}
+  ) { }
 
   async set(key: string, value: any, ttl: number): Promise<boolean> {
     const data = await JSON.stringify(value);
@@ -54,4 +54,15 @@ export class RedisService {
     if (!value) return null;
     return JSON.parse(value);
   }
+
+  async setIfNotExists(key: string, ttl: number): Promise<boolean> {
+    const result = await asyncFunc(
+      () => this.redis.set(key, '1', 'EX', ttl, 'NX'),
+      (error) => {
+        this.logger.error('redis set nx failed', error);
+      },
+    );
+    return result === 'OK';
+  }
+
 }

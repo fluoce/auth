@@ -66,7 +66,7 @@ const Github = () => {
         if (refUrl && /^http(s)?:\/\//.test(refUrl)) {
           window.location.replace(refUrl + `/auth?code=${success?.code}&path=${path}`);
           localStorage.removeItem("refUrl");
-          localStorage.removeItem("location");
+          localStorage.removeItem("path");
         } else {
           setError("redirect url not found go back to main site");
         }
