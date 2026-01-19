@@ -19,4 +19,4 @@ import type { StringValue } from 'ms';
   exports: [NestJwtModule],
   providers: [JwtService],
 })
-export class JwtModule {}
+export class JwtModule { }

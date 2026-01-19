@@ -6,8 +6,12 @@ function readKey(path: string): string {
   return readFileSync(join(process.cwd(), path), 'utf-8');
 }
 
-export const jwtPrivateKey = readKey(
+export const jwtPrivateKeyPath = readKey(
   process.env.JWT_PRIVATE_KEY_PATH as string,
 );
 
-export const jwtPublicKey = readKey(process.env.JWT_PUBLIC_KEY_PATH as string);
+export const jwtPublicKeyPath = readKey(process.env.JWT_PUBLIC_KEY_PATH as string);
+
+export const jwtPrivateKey = process.env.JWT_PRIVATE_KEY
+
+export const jwtPublicKey = process.env.JWT_PUBLIC_KEY
