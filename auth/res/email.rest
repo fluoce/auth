@@ -46,7 +46,7 @@ POST http://localhost:3001/exchange
 Content-Type: application/json
 
 {
-  "code": <exchange code>
+  "code": "bb410f44797e6ebbb74c4546964771b20af77b613ac825fde0b3f5ba814972c3d862873c04a4a23e1e030d4f112b4d0a"
 }
 
 

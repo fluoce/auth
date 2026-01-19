@@ -13,6 +13,7 @@ import { LogoutModule } from './module/logout/logout.module';
 import { MeModule } from './module/me/me.module';
 import { ExchangeModule } from './module/exchange/exchange.module';
 import { GithubModule } from './module/github/github.module';
+import { RefreshTokenCronModule } from './cron/refresh-token-cron/refresh-token.module';
 
 @Module({
   imports: [
@@ -28,8 +29,9 @@ import { GithubModule } from './module/github/github.module';
     MeModule,
     ExchangeModule,
     GithubModule,
+    RefreshTokenCronModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
