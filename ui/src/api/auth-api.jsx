@@ -110,11 +110,13 @@ export default function useAuthApi() {
         }
       );
       setUser(res?.data?.data);
+      setIsLoading(false);
       return res.data.data;
     } catch (error) {
       setError(
         error?.response?.data?.message || "Github login failed, try later"
       );
+      setIsLoading(false);
       return false;
     } finally {
       setIsLoading(false);

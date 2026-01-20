@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix ui\" \"npm run start:dev --prefix auth\""
+    "dev": "concurrently \"npm run dev --prefix ui\" \"npm run start:dev --prefix auth\"",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -11,5 +12,8 @@
   "description": "",
   "dependencies": {
     "concurrently": "^9.2.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.0"
   }
 }

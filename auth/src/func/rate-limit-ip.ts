@@ -2,19 +2,17 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { RedisService } from 'src/lib/redis/redis.service';
 
 export async function rateLimitByIp(
-    redis: RedisService,
-    ip: string | undefined,
-    action: string,
-    seconds = 2,
+  redis: RedisService,
+  ip: string | undefined,
+  seconds = 2,
 ) {
-    const key = `rl:ip:${action}:${ip}`;
+  if (!ip) return;
 
-    const allowed = await redis.setIfNotExists(key, seconds);
+  const key = `rl:ip:${ip}`;
 
-    if (!allowed) {
-        throw new HttpException(
-            'Too many requests',
-            HttpStatus.TOO_MANY_REQUESTS,
-        );
-    }
+  const allowed = await redis.setIfNotExists(key, seconds);
+
+  if (!allowed) {
+    throw new HttpException('Too many requests', HttpStatus.TOO_MANY_REQUESTS);
+  }
 }

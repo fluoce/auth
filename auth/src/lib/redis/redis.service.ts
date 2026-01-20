@@ -10,7 +10,7 @@ export class RedisService {
   constructor(
     @Inject(REDIS_CLIENT)
     private readonly redis: Redis,
-  ) { }
+  ) {}
 
   async set(key: string, value: any, ttl: number): Promise<boolean> {
     const data = await JSON.stringify(value);
@@ -64,5 +64,4 @@ export class RedisService {
     );
     return result === 'OK';
   }
-
 }

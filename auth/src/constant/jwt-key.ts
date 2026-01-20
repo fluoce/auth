@@ -12,6 +12,6 @@ import 'dotenv/config';
 
 // export const jwtPublicKeyPath = readKey(process.env.JWT_PUBLIC_KEY_PATH as string);
 
-export const jwtPrivateKey = process.env.JWT_PRIVATE_KEY
+export const jwtPrivateKey = process.env.JWT_PRIVATE_KEY;
 
-export const jwtPublicKey = process.env.JWT_PUBLIC_KEY
+export const jwtPublicKey = process.env.JWT_PUBLIC_KEY;

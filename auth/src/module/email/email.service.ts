@@ -22,7 +22,7 @@ export class EmailService {
     private readonly redisService: RedisService,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
-  ) { }
+  ) {}
 
   async email(data: EmailDto): Promise<ResponseDataType> {
     const otp = generateOTP();

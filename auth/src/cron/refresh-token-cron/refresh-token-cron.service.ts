@@ -6,7 +6,7 @@ import { PrismaService } from 'src/lib/prisma/prisma.service';
 export class RefreshTokenCronService {
   private readonly logger = new Logger(RefreshTokenCronService.name);
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   // Run every day at 03:00
   @Cron('0 3 * * *', { timeZone: 'Asia/Kolkata' })
