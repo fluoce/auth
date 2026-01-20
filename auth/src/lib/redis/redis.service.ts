@@ -2,7 +2,6 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import Redis from 'ioredis';
 import { REDIS_CLIENT } from './redis';
 import { asyncFunc } from 'src/func/asyncFunc';
-import { error } from 'console';
 
 @Injectable()
 export class RedisService {

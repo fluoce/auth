@@ -78,19 +78,3 @@ export async function rateLimitByRefreshTokenId(
   }
 
 }
-
-
-export async function rateLimitIncomingRefreshToken(
-  redis: RedisService,
-  token: string | null | undefined
-) {
-  if (!token) return;
-
-  const key = `rl:incomingRefreshToken:${token}`;
-
-  const exists = await redis.exists(key);
-
-  if (exists) {
-    throw new UnauthorizedException("Invalid refresh token")
-  }
-}

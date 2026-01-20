@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SendTokenController } from './exchange.controller';
+import { ExchangeController } from './exchange.controller';
 
-describe('SendTokenController', () => {
-  let controller: SendTokenController;
+describe('ExchangeController', () => {
+  let controller: ExchangeController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [SendTokenController],
+      controllers: [ExchangeController],
     }).compile();
 
-    controller = module.get<SendTokenController>(SendTokenController);
+    controller = module.get<ExchangeController>(ExchangeController);
   });
 
   it('should be defined', () => {

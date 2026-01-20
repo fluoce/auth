@@ -8,4 +8,4 @@ import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.servic
   controllers: [RefreshController],
   providers: [RefreshService, UserService, RefreshTokenService],
 })
-export class RefreshModule {}
+export class RefreshModule { }
