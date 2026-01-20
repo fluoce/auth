@@ -27,17 +27,17 @@ export class EmailService {
   async email(data: EmailDto): Promise<ResponseDataType> {
     const otp = generateOTP();
 
-    // const emailSendSuccess = await this.sendEmail.sendEmail({
-    //   email: data.email,
-    //   name: nameFromEmail(data.email),
-    //   otp,
-    // });
+    const emailSendSuccess = await this.sendEmail.sendEmail({
+      email: data.email,
+      name: nameFromEmail(data.email),
+      otp,
+    });
 
-    // if (!emailSendSuccess) {
-    //   throw new ServiceUnavailableException(
-    //     'Failed to send email, Please try again later',
-    //   );
-    // }
+    if (!emailSendSuccess) {
+      throw new ServiceUnavailableException(
+        'Failed to send email, Please try again later',
+      );
+    }
 
     const redisSetSuccess = await this.redisService.set(
       `otp:${data.email}`,
