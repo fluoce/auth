@@ -88,7 +88,7 @@ const SignUp = () => {
               </span>
               <span className="flex-1 border-t"></span>
             </div>
-            <div className="rounded-md bg-green-500/20">
+            <div className="rounded-md bg-green-500/25">
               {lastUsedSocial === "google" && <Google />}
               {lastUsedSocial === "github" && <Github />}
             </div>
