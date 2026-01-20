@@ -2,6 +2,7 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import Redis from 'ioredis';
 import { REDIS_CLIENT } from './redis';
 import { asyncFunc } from 'src/func/asyncFunc';
+import { error } from 'console';
 
 @Injectable()
 export class RedisService {
@@ -10,17 +11,17 @@ export class RedisService {
   constructor(
     @Inject(REDIS_CLIENT)
     private readonly redis: Redis,
-  ) {}
+  ) { }
 
   async set(key: string, value: any, ttl: number): Promise<boolean> {
     const data = await JSON.stringify(value);
-    const success = await asyncFunc(
+    const result = await asyncFunc(
       () => this.redis.set(key, data, 'EX', ttl),
       (error) => {
         this.logger.error('redis set failed', error);
       },
     );
-    return success ? true : false;
+    return result === 'OK';
   }
 
   async get<T = any>(key: string): Promise<T | null> {
@@ -55,6 +56,16 @@ export class RedisService {
     return JSON.parse(value);
   }
 
+  async exists(key: string): Promise<boolean> {
+    const result = await asyncFunc(
+      () => this.redis.exists(key),
+      (error) => {
+        this.logger.error('redis exists check failed', error);
+      },
+    );
+    return result ? true : false;
+  }
+
   async setIfNotExists(key: string, ttl: number): Promise<boolean> {
     const result = await asyncFunc(
       () => this.redis.set(key, '1', 'EX', ttl, 'NX'),
@@ -63,5 +74,19 @@ export class RedisService {
       },
     );
     return result === 'OK';
+  }
+
+  async incr(key: string): Promise<Number> {
+    const result = await asyncFunc(
+      () => this.redis.incr(key),
+      (error) => {
+        this.logger.error('redis incr failed', error);
+      }
+    )
+    return result ? result : 1
+  }
+
+  async expire(key: string, ttl: number): Promise<void> {
+    await this.redis.expire(key, ttl);
   }
 }

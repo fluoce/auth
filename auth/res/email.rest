@@ -45,8 +45,8 @@ Authorization: Bearer <refresh-token>
 POST http://localhost:3001/exchange
 Content-Type: application/json
 
-{
-  "code": <exchnage code>
+{ 
+  "code": <exchange code>
 }
 
 

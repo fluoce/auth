@@ -9,8 +9,7 @@ export class RefreshService {
   constructor(
     private readonly refreshTokenService: RefreshTokenService,
     private readonly jwtService: JwtService,
-    private readonly userService: UserService,
-  ) {}
+  ) { }
 
   async refresh(refreshTokenId: string): Promise<ResponseDataType> {
     const result =
@@ -39,7 +38,6 @@ export class RefreshService {
       message: 'token refresh successfully',
       accessToken,
       refreshToken,
-      user,
     };
   }
 }

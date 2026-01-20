@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import type { Request } from 'express';
-import { rateLimitByIp } from './func/rate-limit-ip';
+import { rateLimitByIp } from './func/rate-limit';
 import { RedisService } from './lib/redis/redis.service';
 
 @Injectable()
