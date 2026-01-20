@@ -12,11 +12,11 @@ export class ResendService {
   }
 
   async sendEmail({ email, name, otp }: SendEmailType): Promise<boolean> {
-    const from = `Fluoce Cloud <no-reply@mail.cloud.fluoce.com>`;
+    const from = `Fluoce Cloud <no-reply@mail.auth.fluoce.com>`;
 
     const subject = 'Your Fluoce Verification Code';
 
-    const html = `<p>${name}</p></hr><p>${otp}</p>`;
+    const html = `<p>hi, ${name}</p></hr><p>your code - ${otp}</p>`;
 
     const { data, error } = await this.resend.emails.send({
       from,
