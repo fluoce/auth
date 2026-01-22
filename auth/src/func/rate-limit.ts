@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { RedisService } from 'src/lib/redis/redis.service';
 
 export async function rateLimitByIp(
@@ -40,9 +40,9 @@ export async function rateLimitByEmail(
     await redis.expire(windowKey, 30);
   }
 
-  if (Number(count) > 2) {
-    throw new BadRequestException(
-      'You can only request 2 OTPs in 30 seconds, Please try again after 30 seconds or later',
+  if (Number(count) > 3) {
+    throw new HttpException(
+      'You can only request 2 OTPs in 30 seconds, Please try again after 30 seconds or later', HttpStatus.TOO_MANY_REQUESTS
     );
   }
 
@@ -72,9 +72,30 @@ export async function rateLimitByRefreshTokenId(
   }
 
   if (Number(count) > 2) {
-    throw new BadRequestException(
-      'Too many refresh attempts, Please try again after a minute'
+    throw new HttpException(
+      'Too many refresh attempts, Please try again after a minute', HttpStatus.TOO_MANY_REQUESTS
     );
   }
 
+}
+
+export async function rateLimitByUserId(
+  redis: RedisService,
+  userId: string,
+) {
+  if (!userId) return;
+
+  const windowKey = `rl:userId:window:${userId}`;
+
+  const count = await redis.incr(windowKey);
+
+  if (count == 1) {
+    await redis.expire(windowKey, 30);
+  }
+
+  if (Number(count) > 15) {
+    throw new HttpException(
+      'You have exceeded the request limit for your account. Please wait 30 seconds before trying again.', HttpStatus.TOO_MANY_REQUESTS
+    );
+  }
 }

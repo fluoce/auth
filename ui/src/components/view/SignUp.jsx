@@ -126,13 +126,13 @@ const SignUp = () => {
           </Button>
         )}
         <p className="flex w-full items-center justify-end gap-2">
-          <span className="hover:text-blue-600 hover:underline">
+          <a href="https://fluoce.com" target="_blank" className="hover:text-blue-600 hover:underline">
             Terms of Use
-          </span>
+          </a>
           |
-          <span className="hover:text-blue-600 hover:underline">
+          <a href="https://fluoce.com" target="_blank" className="hover:text-blue-600 hover:underline">
             Privacy Policy
-          </span>
+          </a>
         </p>
       </div>
     </div>

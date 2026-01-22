@@ -86,6 +86,11 @@ export class RedisService {
   }
 
   async expire(key: string, ttl: number): Promise<void> {
-    await this.redis.expire(key, ttl);
+    await asyncFunc(
+      () => this.redis.expire(key, ttl),
+      (error) => {
+        this.logger.error('redis expire failed', error);
+      }
+    )
   }
 }
