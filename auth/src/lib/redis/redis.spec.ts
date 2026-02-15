@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Redis } from './redis';
+import { Redis } from 'ioredis';
 
 describe('Redis', () => {
   let provider: Redis;

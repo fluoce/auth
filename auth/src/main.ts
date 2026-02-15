@@ -8,11 +8,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'https://auth.fluoce.com',
-    ],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      try {
+        const url = new URL(origin);
+        if (url.hostname === 'localhost') {
+          return callback(null, true);
+        }
+        if (url.hostname.endsWith('.fluoce.com') || url.hostname === 'fluoce.com') {
+          return callback(null, true);
+        }
+      } catch (e) {
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   });
 
