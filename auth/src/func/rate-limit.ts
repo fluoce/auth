@@ -4,7 +4,7 @@ import { RedisService } from 'src/lib/redis/redis.service';
 export async function rateLimitByIp(
   redis: RedisService,
   ip: string | undefined | null,
-  seconds = 0.2,
+  seconds = 1,
 ) {
   if (!ip) return;
 
