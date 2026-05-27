@@ -17,24 +17,24 @@ export const RedisProvider: Provider = {
       if (times > maxRetries) {
         return null;
       }
-      logger.log("Redis retry")
+      logger.log('Redis retry');
       return retryDelay;
     }
 
     const redis = redisUrl
       ? new Redis(redisUrl, {
-        retryStrategy,
-      })
+          retryStrategy,
+        })
       : new Redis({
-        host: process.env.REDIS_HOST || '127.0.0.1',
-        port: Number(process.env.REDIS_PORT || 6379),
-        password: process.env.REDIS_PASSWORD || undefined,
-        db: Number(process.env.REDIS_DB || 0),
-        retryStrategy,
-      });
+          host: process.env.REDIS_HOST || '127.0.0.1',
+          port: Number(process.env.REDIS_PORT || 6379),
+          password: process.env.REDIS_PASSWORD || undefined,
+          db: Number(process.env.REDIS_DB || 0),
+          retryStrategy,
+        });
 
     redis.on('error', (err) => {
-      logger.warn(`Redis unavailable: ${err.message}`);
+      logger.warn(`Redis unavailable: ${err?.message}`);
     });
 
     redis.on('connect', () => {

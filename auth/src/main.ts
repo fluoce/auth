@@ -15,11 +15,13 @@ async function bootstrap() {
         if (url.hostname === 'localhost') {
           return callback(null, true);
         }
-        if (url.hostname.endsWith('.fluoce.com') || url.hostname === 'fluoce.com') {
+        if (
+          url.hostname.endsWith('.fluoce.com') ||
+          url.hostname === 'fluoce.com'
+        ) {
           return callback(null, true);
         }
-      } catch (e) {
-      }
+      } catch (e) {}
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
@@ -37,7 +39,7 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ResponseInterceptor());
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 6000;
 
   await app.listen(port, '0.0.0.0');
 

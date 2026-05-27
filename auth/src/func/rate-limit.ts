@@ -54,20 +54,8 @@ export async function rateLimitByEmail(
 export async function rateLimitByRefreshTokenId(
   redis: RedisService,
   refreshTokenId: string,
-  seconds = 5,
 ) {
   if (!refreshTokenId) return;
-
-  const key = `rl:refreshTokenId:${refreshTokenId}`;
-
-  const allowed = await redis.setIfNotExists(key, seconds);
-
-  if (!allowed) {
-    throw new HttpException(
-      'Please wait before refreshing again',
-      HttpStatus.TOO_MANY_REQUESTS,
-    );
-  }
 
   const windowKey = `rl:refreshTokenId:window:${refreshTokenId}`;
 
@@ -77,7 +65,7 @@ export async function rateLimitByRefreshTokenId(
     await redis.expire(windowKey, 60);
   }
 
-  if (Number(count) > 2) {
+  if (Number(count) > 10) {
     throw new HttpException(
       'Too many refresh attempts, Please try again after a minute',
       HttpStatus.TOO_MANY_REQUESTS,
