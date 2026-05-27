@@ -17,7 +17,6 @@ export class RefreshTokenService {
     private readonly prisma: PrismaService,
     private readonly ulidService: UlidService,
     private readonly hashService: HashService,
-    private readonly redisService: RedisService,
   ) {}
 
   async createRefreshToken(userId: string): Promise<string | null> {
@@ -53,7 +52,7 @@ export class RefreshTokenService {
 
   async validateRefreshToken(
     refreshToken: string,
-  ): Promise<RefreshTokenType | null> {
+  ): Promise<RefreshTokenWithUser | null> {
     const tokenHash =
       await this.hashService.createRefreshTokenHash(refreshToken);
 
@@ -62,6 +61,34 @@ export class RefreshTokenService {
         tokenHash,
         revoked: false,
         expiresAt: { gt: new Date() },
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!session) {
+      return null;
+    }
+
+    return session;
+  }
+
+  async validateRefreshTokenForGrace(
+    refreshToken: string,
+  ): Promise<RefreshTokenWithUser | null> {
+    const graceTokenHash =
+      await this.hashService.createRefreshTokenHash(refreshToken);
+
+    const session = await this.prisma.refreshToken.findFirst({
+      where: {
+        graceTokenHash,
+        revoked: false,
+        graceUntil: { gt: new Date() },
+        expiresAt: { gt: new Date() },
+      },
+      include: {
+        user: true,
       },
     });
 
@@ -74,8 +101,10 @@ export class RefreshTokenService {
 
   async rotateRefreshToken(
     refreshTokenId: string,
+    graceTokenHash: string,
   ): Promise<{ refreshToken: string; session: RefreshTokenWithUser } | null> {
     const refreshToken = generateRefreshToken();
+
     const tokenHash =
       await this.hashService.createRefreshTokenHash(refreshToken);
 
@@ -93,6 +122,8 @@ export class RefreshTokenService {
       data: {
         tokenHash,
         expiresAt,
+        graceTokenHash,
+        graceUntil: new Date(Date.now() + 60 * 1000),
       },
       include: {
         user: true,
@@ -121,5 +152,18 @@ export class RefreshTokenService {
     });
 
     return result.count == 1;
+  }
+
+  async getRefreshToken(
+    refreshTokenId: string,
+  ): Promise<RefreshTokenWithUser | null> {
+    return await this.prisma.refreshToken.findUnique({
+      where: {
+        id: refreshTokenId,
+      },
+      include: {
+        user: true,
+      },
+    });
   }
 }

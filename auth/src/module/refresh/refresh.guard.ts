@@ -5,13 +5,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.service';
+import type { RefreshTokenGraceData } from 'src/types/refreshToken.types';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
-  constructor(private readonly refreshTokenService: RefreshTokenService) { }
+  constructor(private readonly refreshTokenService: RefreshTokenService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-
     const req = context.switchToHttp().getRequest<Request>();
 
     const authHeader = req.headers['authorization'];
@@ -26,18 +26,32 @@ export class RefreshTokenGuard implements CanActivate {
       throw new UnauthorizedException('Refresh token missing');
     }
 
-    const refreshTokenData =
+    let isGrace: boolean = false;
+
+    let refreshTokenData =
       await this.refreshTokenService.validateRefreshToken(authRefreshToken);
+
+    if (!refreshTokenData) {
+      refreshTokenData =
+        await this.refreshTokenService.validateRefreshTokenForGrace(
+          authRefreshToken,
+        );
+      if (refreshTokenData) {
+        isGrace = true;
+      }
+    }
 
     if (!refreshTokenData) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    if (refreshTokenData.revoked || refreshTokenData.expiresAt < new Date()) {
-      throw new UnauthorizedException('Refresh token expired or revoked');
-    }
-
-    (req as any).refreshTokenId = refreshTokenData.id;
+    (req as any).refreshTokenData = {
+      refreshTokenId: refreshTokenData.id,
+      isGrace,
+      token: authRefreshToken,
+      tokenHash: refreshTokenData.tokenHash,
+      user: refreshTokenData.user,
+    } as RefreshTokenGraceData;
 
     return true;
   }

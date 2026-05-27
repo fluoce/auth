@@ -1,27 +1,58 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.service';
-import { UserService } from 'src/core/user/user.service';
+import { RedisService } from 'src/lib/redis/redis.service';
+import { RefreshTokenGraceData } from 'src/types/refreshToken.types';
 import { ResponseDataType } from 'src/types/response.type';
+import { UserType } from 'src/types/user.types';
 
 @Injectable()
 export class RefreshService {
   constructor(
     private readonly refreshTokenService: RefreshTokenService,
     private readonly jwtService: JwtService,
-  ) { }
+    private readonly redis: RedisService,
+  ) {}
 
-  async refresh(refreshTokenId: string): Promise<ResponseDataType> {
-    const result =
-      await this.refreshTokenService.rotateRefreshToken(refreshTokenId);
+  async refresh(
+    refreshTokenData: RefreshTokenGraceData,
+  ): Promise<ResponseDataType> {
+    let user: UserType | null = null;
 
-    if (!result || !result.refreshToken) {
-      throw new InternalServerErrorException('Failed to rotate refresh token');
+    let refreshToken: string | null = null;
+
+    if (refreshTokenData.isGrace) {
+      user = refreshTokenData.user;
+
+      refreshToken = await this.redis.get(
+        `grace-refresh:${refreshTokenData.refreshTokenId}`,
+      );
+    } else {
+      const result = await this.refreshTokenService.rotateRefreshToken(
+        refreshTokenData.refreshTokenId,
+        refreshTokenData.tokenHash,
+      );
+
+      if (!result || !result.refreshToken || !result.session) {
+        throw new InternalServerErrorException(
+          'Failed to rotate refresh token',
+        );
+      }
+
+      await this.redis.set(
+        `grace-refresh:${refreshTokenData.refreshTokenId}`,
+        result.refreshToken,
+        65,
+      );
+
+      user = result.session.user;
+
+      refreshToken = result.refreshToken;
     }
 
-    const { refreshToken, session } = result;
-
-    const user = session.user;
+    if (!user || !refreshToken) {
+      throw new InternalServerErrorException('failed to create new session');
+    }
 
     const payload = {
       sub: user.id,
