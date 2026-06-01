@@ -62,6 +62,64 @@ export default function useAuthApi() {
     }
   }
 
+  async function phoneAuth(data) {
+    setError(null);
+    if (!refUrl || !/^http(s)?:\/\//.test(refUrl)) {
+      setError("redirect url not found go back to main site");
+      return false;
+    }
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        `${authUrl}/phone`,
+        {
+          phone: data.phone,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      setUser(res?.data?.data);
+      return true;
+    } catch (error) {
+      setError(
+        error?.response?.data?.message || "phone login failed, try later"
+      );
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function verifyPhone(data) {
+    setError(null);
+    if (!refUrl || !/^http(s)?:\/\//.test(refUrl)) {
+      setError("redirect url not found go back to main site");
+      return false;
+    }
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        `${authUrl}/phone/verify`,
+        {
+          phone: data.phone,
+          otp: data.otp,
+          name: data.name,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      setUser(res?.data?.data);
+      return res.data.data;
+    } catch (error) {
+      setError(error?.response?.data?.message || "Invalid or expired OTP");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function googleAuth(code) {
     setError(null);
     if (!refUrl || !/^http(s)?:\/\//.test(refUrl)) {
@@ -126,6 +184,8 @@ export default function useAuthApi() {
   return {
     emailAuth,
     verifyEmail,
+    phoneAuth,
+    verifyPhone,
     googleAuth,
     githubAuth,
   };

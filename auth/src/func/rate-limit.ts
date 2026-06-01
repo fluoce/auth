@@ -30,12 +30,46 @@ export async function rateLimitByEmail(
 
   if (!allowed) {
     throw new HttpException(
-      'Too many requests for OTP',
+      'Too frequent requests for OTP',
       HttpStatus.TOO_MANY_REQUESTS,
     );
   }
 
   const windowKey = `rl:email:window:${email}`;
+
+  const count = await redis.incr(windowKey);
+
+  if (count == 1) {
+    await redis.expire(windowKey, 30);
+  }
+
+  if (Number(count) > 3) {
+    throw new HttpException(
+      'You can only request 2 OTPs in 30 seconds, Please try again after 30 seconds or later',
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
+  }
+}
+
+export async function rateLimitByPhone(
+  redis: RedisService,
+  phone: string,
+  seconds = 5,
+) {
+  if (!phone) return;
+
+  const key = `rl:phone:${phone}`;
+
+  const allowed = await redis.setIfNotExists(key, seconds);
+
+  if (!allowed) {
+    throw new HttpException(
+      'Too frequent requests for OTP',
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
+  }
+
+  const windowKey = `rl:phone:window:${phone}`;
 
   const count = await redis.incr(windowKey);
 

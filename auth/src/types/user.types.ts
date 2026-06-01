@@ -4,6 +4,7 @@ import {
   IsString,
   IsUrl,
   IsPhoneNumber,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -15,9 +16,18 @@ export class CreateUserDto {
   email: string;
 
   @IsOptional()
-  @IsPhoneNumber()
+  @IsUrl()
   @IsString()
-  mobile?: string;
+  photo?: string;
+}
+
+export class CreateUserWithPhoneDto {
+  @IsString()
+  name: string;
+
+  @IsEmail()
+  @IsString()
+  phone: string;
 
   @IsOptional()
   @IsUrl()
@@ -26,9 +36,11 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
+  @ValidateIf((o) => o?.photo === undefined)
   @IsString()
   name?: string;
 
+  @ValidateIf((o) => o?.name === undefined)
   @IsOptional()
   @IsUrl()
   @IsString()
@@ -38,9 +50,9 @@ export class UpdateUserDto {
 export interface UserType {
   id: string;
   name: string;
-  email: string;
-  mobile?: string | null;
-  photo?: string | null;
-  createdAt?: Date;
-  updatedAt?: Date;
+  email: string | null;
+  phone: string | null;
+  photo: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }

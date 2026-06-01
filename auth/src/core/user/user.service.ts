@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/lib/prisma/prisma.service';
 import { UlidService } from 'src/lib/ulid/ulid.service';
-import { CreateUserDto, UpdateUserDto, UserType } from 'src/types/user.types';
+import {
+  CreateUserDto,
+  CreateUserWithPhoneDto,
+  UpdateUserDto,
+  UserType,
+} from 'src/types/user.types';
 
 @Injectable()
 export class UserService {
@@ -22,9 +27,9 @@ export class UserService {
     });
   }
 
-  async findByMobile(mobile: string): Promise<UserType | null> {
+  async findByPhone(phone: string): Promise<UserType | null> {
     return await this.prisma.user.findUnique({
-      where: { mobile },
+      where: { phone },
     });
   }
 
@@ -35,9 +40,9 @@ export class UserService {
     return count > 0;
   }
 
-  async mobileExist(mobile: string): Promise<boolean> {
+  async phoneExist(phone: string): Promise<boolean> {
     const count = await this.prisma.user.count({
-      where: { mobile },
+      where: { phone },
     });
     return count > 0;
   }
@@ -50,7 +55,28 @@ export class UserService {
       update: {},
       create: {
         id: this.ulidService.generateUserId('user'),
-        ...data,
+        email: data.email,
+        name: data.name,
+        photo: data.photo ?? undefined,
+      },
+    });
+  }
+
+  async upsertWithPhone(
+    data: CreateUserWithPhoneDto,
+  ): Promise<UserType | null> {
+    return this.prisma.user.upsert({
+      where: {
+        phone: data.phone,
+      },
+      update: {
+        name: data?.name ?? undefined,
+      },
+      create: {
+        id: this.ulidService.generateUserId('user'),
+        phone: data.phone,
+        name: data.name,
+        photo: data.photo ?? undefined,
       },
     });
   }
@@ -64,10 +90,10 @@ export class UserService {
     });
   }
 
-  async update(id: string, data: UpdateUserDto): Promise<UserType | null> {
+  async update(userId: string, data: UpdateUserDto): Promise<UserType | null> {
     return await this.prisma.user.update({
       where: {
-        id,
+        id: userId,
       },
       data: {
         ...data,

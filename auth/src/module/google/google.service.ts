@@ -38,8 +38,8 @@ export class GoogleService {
       }
 
       const user = await this.userService.upsert({
-        name: payload?.name as string,
-        email: payload?.email as string,
+        name: payload.name as string,
+        email: payload.email as string,
         photo: payload.picture as string,
       });
 

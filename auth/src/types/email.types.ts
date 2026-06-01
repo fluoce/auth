@@ -6,7 +6,7 @@ export class EmailDto {
   email: string;
 }
 
-export class VerifyDto {
+export class EmailVerifyDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;

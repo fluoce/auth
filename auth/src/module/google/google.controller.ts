@@ -5,7 +5,7 @@ import { CodeDto } from 'src/types/code.types';
 
 @Controller('google')
 export class GoogleController {
-  constructor(private readonly googleService: GoogleService) { }
+  constructor(private readonly googleService: GoogleService) {}
 
   @Post()
   async google(@Body() data: CodeDto): Promise<ResponseDataType> {

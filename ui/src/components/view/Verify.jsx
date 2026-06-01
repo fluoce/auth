@@ -24,7 +24,9 @@ const Verify = () => {
     const success = await verifyEmail({ otp: data?.otp, email: user?.email });
     if (success && success.code) {
       if (refUrl && /^http(s)?:\/\//.test(refUrl)) {
-        window.location.replace(refUrl + `/auth?code=${success?.code}&path=${path}`);
+        window.location.replace(
+          refUrl + `/auth?code=${success?.code}&path=${path}`
+        );
         localStorage.removeItem("refUrl");
         localStorage.removeItem("path");
       } else {

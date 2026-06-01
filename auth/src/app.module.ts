@@ -16,6 +16,7 @@ import { GithubModule } from './module/github/github.module';
 import { RefreshTokenCronModule } from './cron/refresh-token-cron/refresh-token.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RateLimitGuard } from './ratelimit.guard';
+import { PhoneModule } from './module/phone/phone.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { RateLimitGuard } from './ratelimit.guard';
     ExchangeModule,
     GithubModule,
     RefreshTokenCronModule,
+    PhoneModule,
   ],
   controllers: [AppController],
   providers: [
@@ -42,4 +44,4 @@ import { RateLimitGuard } from './ratelimit.guard';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

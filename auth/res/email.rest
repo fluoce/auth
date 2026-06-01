@@ -17,6 +17,26 @@ Content-Type: application/json
 }
 
 
+### phone
+POST http://localhost:3001/phone
+Content-Type: application/json
+
+{
+  "phone": <phone-number>
+}
+
+
+### verify-phone 
+POST http://localhost:3001/phone/verify
+Content-Type: application/json
+
+{
+  "phone": <phone-number>,
+  "otp": <otp>,
+  "name": <name>
+}
+
+
 ### google
 POST http://localhost:3001/google
 Content-Type: application/json
@@ -35,18 +55,12 @@ Content-Type: application/json
 }
 
 
-### refresh-token
-POST http://localhost:3001/refresh
-Content-Type: application/json
-Authorization: Bearer <refresh-token>
-
-
-### exchange-tokens
+### exchange-code
 POST http://localhost:3001/exchange
 Content-Type: application/json
 
 { 
-  "code": <exchange code>
+  "code": <code>
 }
 
 
@@ -54,6 +68,22 @@ Content-Type: application/json
 GET http://localhost:3001/me
 Content-Type: application/json
 Authorization: Bearer <access-token>
+
+
+### update 
+POST http://localhost:3001/me
+Content-Type: application/json
+Authorization: Bearer <access-token>
+{
+  "name": <name>
+  "photo": <url>
+}
+
+
+### refresh-token
+POST http://localhost:3001/refresh
+Content-Type: application/json
+Authorization: Bearer <refresh-token>
 
 
 ### logout

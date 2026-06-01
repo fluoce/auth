@@ -8,39 +8,34 @@ import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.servic
 import { UserService } from 'src/core/user/user.service';
 import { generateCode } from 'src/func/generate-code';
 import { generateOTP } from 'src/func/generate-opt';
-import { nameFromEmail } from 'src/func/name-from-email';
 import { RedisService } from 'src/lib/redis/redis.service';
-import { ResendService } from 'src/lib/resend/resend.service';
-import { EmailDto, EmailVerifyDto } from 'src/types/email.types';
+import { TwilioService } from 'src/lib/twilio/twilio.service';
+import { PhoneDto, PhoneVerifyDto } from 'src/types/phone.types';
 import { ResponseDataType } from 'src/types/response.type';
 
 @Injectable()
-export class EmailService {
+export class PhoneService {
   constructor(
     private readonly userService: UserService,
-    private readonly sendEmail: ResendService,
+    private readonly sendSms: TwilioService,
     private readonly redisService: RedisService,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
-  async email(data: EmailDto): Promise<ResponseDataType> {
+  async phone(data: PhoneDto): Promise<ResponseDataType> {
     const otp = generateOTP();
 
-    const emailSendSuccess = await this.sendEmail.sendEmail({
-      email: data.email,
-      name: nameFromEmail(data.email),
-      otp,
-    });
+    const smsSendSuccess = await this.sendSms.sendOtp(data.phone, otp);
 
-    if (!emailSendSuccess) {
+    if (!smsSendSuccess) {
       throw new ServiceUnavailableException(
-        'Failed to send email, Please try again later',
+        'Failed to send sms, Please try again later',
       );
     }
 
     const redisSetSuccess = await this.redisService.set(
-      `otp:email:${data.email}`,
+      `otp:phone:${data.phone}`,
       otp,
       300,
     );
@@ -51,14 +46,18 @@ export class EmailService {
       );
     }
 
+    const userWithThisPhone = await this.userService.findByPhone(data.phone);
+
     return {
-      message: 'OTP has been sent to your email',
-      email: data?.email,
+      message: 'OTP has been sent to your phone',
+      phone: data.phone,
+      isNewUser: !userWithThisPhone,
+      name: userWithThisPhone ? userWithThisPhone?.name : undefined,
     };
   }
 
-  async verify(data: EmailVerifyDto): Promise<ResponseDataType> {
-    const redisGetOtp = await this.redisService.get(`otp:email:${data.email}`);
+  async verify(data: PhoneVerifyDto): Promise<ResponseDataType> {
+    const redisGetOtp = await this.redisService.get(`otp:phone:${data.phone}`);
 
     if (!redisGetOtp) {
       throw new BadRequestException('Expired OTP or incorrect');
@@ -68,16 +67,16 @@ export class EmailService {
       throw new BadRequestException('Incorrect or expired OTP');
     }
 
-    this.redisService.del(`otp:email:${data.email}`);
+    this.redisService.del(`otp:phone:${data.phone}`);
 
-    const user = await this.userService.upsert({
-      email: data.email,
-      name: nameFromEmail(data.email),
+    const user = await this.userService.upsertWithPhone({
+      phone: data.phone,
+      name: data.name,
     });
 
     if (!user) {
       throw new ServiceUnavailableException(
-        'Failed to register email, Please try again later',
+        'Failed to register Phone, Please try again later',
       );
     }
 

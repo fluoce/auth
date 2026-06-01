@@ -4,8 +4,10 @@ import { RefreshService } from './refresh.service';
 import { rateLimitByRefreshTokenId } from 'src/func/rate-limit';
 import { RedisService } from 'src/lib/redis/redis.service';
 import { RefreshTokenGraceData } from 'src/types/refreshToken.types';
+import { SkipRateLimit } from 'src/skip.ratelimit.decorator';
 
 @UseGuards(RefreshTokenGuard)
+@SkipRateLimit()
 @Controller('refresh')
 export class RefreshController {
   constructor(
