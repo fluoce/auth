@@ -51,7 +51,8 @@ export class GoogleService {
 
       const jwtPayload = {
         sub: user.id,
-        email: user.email,
+        email: user?.email,
+        phone: user?.phone,
       };
 
       const [accessToken, refreshToken] = await Promise.all([

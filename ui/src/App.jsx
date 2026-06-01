@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import Verify from "./components/view/Verify";
 import SingupWithPhone from "./components/view/SingupWithPhone";
 import VerifyPhone from "./components/view/VerifyPhone";
+import Profile from "./components/view/Profile";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/auth/verify" element={<Verify />} />
         <Route path="/auth/phone" element={<SingupWithPhone />} />
         <Route path="/auth/phone/verify" element={<VerifyPhone />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </div>
   );

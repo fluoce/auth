@@ -56,7 +56,8 @@ export class RefreshService {
 
     const payload = {
       sub: user.id,
-      email: user.email,
+      email: user?.email,
+      phone: user?.phone,
     };
 
     const accessToken = await this.jwtService.signAsync(payload);
