@@ -5,7 +5,7 @@ import type { Request } from 'express';
 import { SkipRateLimit } from 'src/skip.ratelimit.decorator';
 import { RedisService } from 'src/lib/redis/redis.service';
 import { rateLimitByUserId } from 'src/func/rate-limit';
-import { UpdateUserDto } from 'src/types/user.types';
+import { AddEmailDto, AddPhoneDto, UpdateUserDto } from 'src/types/user.types';
 
 @UseGuards(MeGuard)
 @SkipRateLimit()
@@ -28,5 +28,19 @@ export class MeController {
     const userId = (req as any).userId;
     await rateLimitByUserId(this.redisService, userId);
     return await this.meService.update(userId, data);
+  }
+
+  @Post('add/email')
+  async addEmail(@Req() req: Request, @Body() data: AddEmailDto) {
+    const userId = (req as any).userId;
+    await rateLimitByUserId(this.redisService, userId);
+    return await this.meService.addEmail(userId, data);
+  }
+
+  @Post('add/phone')
+  async addPhone(@Req() req: Request, @Body() data: AddPhoneDto) {
+    const userId = (req as any).userId;
+    await rateLimitByUserId(this.redisService, userId);
+    return await this.meService.addPhone(userId, data);
   }
 }

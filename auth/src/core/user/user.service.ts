@@ -100,4 +100,26 @@ export class UserService {
       },
     });
   }
+
+  async addEmail(userId: string, email: string): Promise<UserType | null> {
+    return await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        email,
+      },
+    });
+  }
+
+  async addPhone(userId: string, phone: string): Promise<UserType | null> {
+    return await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        phone,
+      },
+    });
+  }
 }

@@ -5,6 +5,7 @@ import {
   IsUrl,
   IsPhoneNumber,
   ValidateIf,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -45,6 +46,26 @@ export class UpdateUserDto {
   @IsUrl()
   @IsString()
   photo?: string;
+}
+
+export class AddEmailDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
+}
+
+export class AddPhoneDto {
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
+
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
 }
 
 export interface UserType {

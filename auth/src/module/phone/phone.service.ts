@@ -4,10 +4,14 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import type { Response } from 'express';
+import { exCodeKey, phoneOtpKey } from 'src/constant/redis-key';
 import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.service';
 import { UserService } from 'src/core/user/user.service';
+import { cookieOption } from 'src/func/cookie-option';
 import { generateCode } from 'src/func/generate-code';
 import { generateOTP } from 'src/func/generate-opt';
+import { AuthCookieService } from 'src/lib/auth-cookie/auth-cookie.service';
 import { RedisService } from 'src/lib/redis/redis.service';
 import { TwilioService } from 'src/lib/twilio/twilio.service';
 import { PhoneDto, PhoneVerifyDto } from 'src/types/phone.types';
@@ -21,6 +25,7 @@ export class PhoneService {
     private readonly redisService: RedisService,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
+    private readonly authCookie: AuthCookieService,
   ) {}
 
   async phone(data: PhoneDto): Promise<ResponseDataType> {
@@ -35,7 +40,7 @@ export class PhoneService {
     }
 
     const redisSetSuccess = await this.redisService.set(
-      `otp:phone:${data.phone}`,
+      phoneOtpKey(data.phone),
       otp,
       300,
     );
@@ -56,8 +61,12 @@ export class PhoneService {
     };
   }
 
-  async verify(data: PhoneVerifyDto): Promise<ResponseDataType> {
-    const redisGetOtp = await this.redisService.get(`otp:phone:${data.phone}`);
+  async verify(
+    data: PhoneVerifyDto,
+    res: Response,
+    authRt?: string,
+  ): Promise<ResponseDataType> {
+    const redisGetOtp = await this.redisService.get(phoneOtpKey(data.phone));
 
     if (!redisGetOtp) {
       throw new BadRequestException('Expired OTP or incorrect');
@@ -67,7 +76,7 @@ export class PhoneService {
       throw new BadRequestException('Incorrect or expired OTP');
     }
 
-    this.redisService.del(`otp:phone:${data.phone}`);
+    this.redisService.del(phoneOtpKey(data.phone));
 
     const user = await this.userService.upsertWithPhone({
       phone: data.phone,
@@ -100,7 +109,7 @@ export class PhoneService {
     const code = generateCode();
 
     const redisSetSuccess = await this.redisService.set(
-      `code:${code}`,
+      exCodeKey(code),
       {
         accessToken,
         refreshToken,
@@ -113,6 +122,8 @@ export class PhoneService {
         'Failed to create session, please try again later',
       );
     }
+
+    await this.authCookie.setIfNotAuthRt(res, authRt, user?.id);
 
     return {
       message: 'Otp verifyed successfully',

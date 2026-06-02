@@ -75,8 +75,28 @@ POST http://localhost:3001/me
 Content-Type: application/json
 Authorization: Bearer <access-token>
 {
-  "name": <name>
+  "name": <name>,
   "photo": <url>
+}
+
+
+### add email
+POST http://localhost:3001/me/add/email
+Content-Type: application/json
+Authorization: Bearer <access-token>
+{
+   "email":<email>,
+   "otp":<otp>
+}
+
+
+### add phone
+POST http://localhost:3001/me/add/phone
+Content-Type: application/json
+Authorization: Bearer <access-token>
+{
+  "phone":<phone-number>,
+  "otp":<otp>
 }
 
 

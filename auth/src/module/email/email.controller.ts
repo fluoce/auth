@@ -1,9 +1,11 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Res, Req } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { EmailDto, EmailVerifyDto } from 'src/types/email.types';
 import { ResponseDataType } from 'src/types/response.type';
 import { RedisService } from 'src/lib/redis/redis.service';
 import { rateLimitByEmail } from 'src/func/rate-limit';
+import type { Response } from 'express';
+import type { AuthRequestInterface } from 'src/types/request.types';
 
 @Controller('email')
 export class EmailController {
@@ -19,7 +21,11 @@ export class EmailController {
   }
 
   @Post('verify')
-  async verify(@Body() data: EmailVerifyDto): Promise<ResponseDataType> {
-    return await this.emailService.verify(data);
+  async verify(
+    @Req() req: AuthRequestInterface,
+    @Body() data: EmailVerifyDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<ResponseDataType> {
+    return await this.emailService.verify(data, res, req?.authRt);
   }
 }

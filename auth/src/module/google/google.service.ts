@@ -8,6 +8,10 @@ import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.servic
 import { generateCode } from 'src/func/generate-code';
 import { RedisService } from 'src/lib/redis/redis.service';
 import { CodeDto } from 'src/types/code.types';
+import type { Response } from 'express';
+import { cookieOption } from 'src/func/cookie-option';
+import { AuthCookieService } from 'src/lib/auth-cookie/auth-cookie.service';
+import { exCodeKey } from 'src/constant/redis-key';
 
 @Injectable()
 export class GoogleService {
@@ -16,9 +20,14 @@ export class GoogleService {
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
     private readonly redisService: RedisService,
+    private readonly authCookie: AuthCookieService,
   ) {}
 
-  async google(data: CodeDto): Promise<ResponseDataType> {
+  async google(
+    data: CodeDto,
+    res: Response,
+    authRt?: string,
+  ): Promise<ResponseDataType> {
     try {
       const { tokens } = await googleOauth2Client.getToken(data.code);
 
@@ -69,7 +78,7 @@ export class GoogleService {
       const code = generateCode();
 
       const redisSetSuccess = await this.redisService.set(
-        `code:${code}`,
+        exCodeKey(code),
         {
           accessToken,
           refreshToken,
@@ -82,6 +91,8 @@ export class GoogleService {
           'Failed to create session, please try again later',
         );
       }
+
+      await this.authCookie.setIfNotAuthRt(res, authRt, user?.id);
 
       return {
         message: 'google login success',

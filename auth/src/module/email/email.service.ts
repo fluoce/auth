@@ -13,6 +13,9 @@ import { RedisService } from 'src/lib/redis/redis.service';
 import { ResendService } from 'src/lib/resend/resend.service';
 import { EmailDto, EmailVerifyDto } from 'src/types/email.types';
 import { ResponseDataType } from 'src/types/response.type';
+import type { Response } from 'express';
+import { AuthCookieService } from 'src/lib/auth-cookie/auth-cookie.service';
+import { emailOtpKey, exCodeKey } from 'src/constant/redis-key';
 
 @Injectable()
 export class EmailService {
@@ -22,6 +25,7 @@ export class EmailService {
     private readonly redisService: RedisService,
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
+    private readonly authCookie: AuthCookieService,
   ) {}
 
   async email(data: EmailDto): Promise<ResponseDataType> {
@@ -40,7 +44,7 @@ export class EmailService {
     }
 
     const redisSetSuccess = await this.redisService.set(
-      `otp:email:${data.email}`,
+      emailOtpKey(data.email),
       otp,
       300,
     );
@@ -57,8 +61,12 @@ export class EmailService {
     };
   }
 
-  async verify(data: EmailVerifyDto): Promise<ResponseDataType> {
-    const redisGetOtp = await this.redisService.get(`otp:email:${data.email}`);
+  async verify(
+    data: EmailVerifyDto,
+    res: Response,
+    authRt?: string,
+  ): Promise<ResponseDataType> {
+    const redisGetOtp = await this.redisService.get(emailOtpKey(data.email));
 
     if (!redisGetOtp) {
       throw new BadRequestException('Expired OTP or incorrect');
@@ -68,7 +76,7 @@ export class EmailService {
       throw new BadRequestException('Incorrect or expired OTP');
     }
 
-    this.redisService.del(`otp:email:${data.email}`);
+    this.redisService.del(emailOtpKey(data.email));
 
     const user = await this.userService.upsert({
       email: data.email,
@@ -101,7 +109,7 @@ export class EmailService {
     const code = generateCode();
 
     const redisSetSuccess = await this.redisService.set(
-      `code:${code}`,
+      exCodeKey(code),
       {
         accessToken,
         refreshToken,
@@ -114,6 +122,8 @@ export class EmailService {
         'Failed to create session, please try again later',
       );
     }
+
+    await this.authCookie.setIfNotAuthRt(res, authRt, user?.id);
 
     return {
       message: 'Otp verifyed successfully',

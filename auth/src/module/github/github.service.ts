@@ -11,6 +11,10 @@ import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.servic
 import { JwtService } from '@nestjs/jwt';
 import { generateCode } from 'src/func/generate-code';
 import { RedisService } from 'src/lib/redis/redis.service';
+import type { Response } from 'express';
+import { cookieOption } from 'src/func/cookie-option';
+import { AuthCookieService } from 'src/lib/auth-cookie/auth-cookie.service';
+import { exCodeKey } from 'src/constant/redis-key';
 
 @Injectable()
 export class GithubService {
@@ -20,9 +24,14 @@ export class GithubService {
     private readonly refreshTokenService: RefreshTokenService,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
+    private readonly authCookie: AuthCookieService,
   ) {}
 
-  async github(code: string): Promise<ResponseDataType> {
+  async github(
+    code: string,
+    res: Response,
+    authRt?: string,
+  ): Promise<ResponseDataType> {
     try {
       const githubResponse = await firstValueFrom(
         this.http.post(
@@ -94,7 +103,7 @@ export class GithubService {
       const exchangeCode = generateCode();
 
       const redisSetSuccess = await this.redisService.set(
-        `code:${exchangeCode}`,
+        exCodeKey(exchangeCode),
         {
           accessToken,
           refreshToken,
@@ -107,6 +116,8 @@ export class GithubService {
           'Failed to create session, please try again later',
         );
       }
+
+      await this.authCookie.setIfNotAuthRt(res, authRt, user.id);
 
       return {
         message: 'github login success',
