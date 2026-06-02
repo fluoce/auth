@@ -17,4 +17,16 @@ export class LogoutService {
       message: 'logout success',
     };
   }
+
+  async logoutAll(userId: string) {
+    const result = await this.refreshTokenService.deleteAllRefreshToken(userId);
+
+    if (!result) {
+      throw new InternalServerErrorException('Failed to logout');
+    }
+
+    return {
+      message: 'logout success',
+    };
+  }
 }

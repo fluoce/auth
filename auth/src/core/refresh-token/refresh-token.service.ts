@@ -166,4 +166,13 @@ export class RefreshTokenService {
       },
     });
   }
+
+  async deleteAllRefreshToken(userId: string): Promise<boolean> {
+    const { count } = await this.prisma.refreshToken.deleteMany({
+      where: {
+        userId,
+      },
+    });
+    return count > 0;
+  }
 }

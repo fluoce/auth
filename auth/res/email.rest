@@ -112,3 +112,7 @@ Content-Type: application/json
 Authorization: Bearer <refresh-token>
 
 
+### logout from everywhere
+POST http://localhost:3001/logout/all
+Content-Type: application/json
+Authorization: Bearer <refresh-token>
