@@ -1,4 +1,4 @@
-export function cookieOption(): {
+export function cookieOption(age?: number): {
   httpOnly: boolean;
   secure: boolean;
   sameSite: 'lax';
@@ -8,6 +8,6 @@ export function cookieOption(): {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
-    maxAge: 1000 * 60 * 60 * 24 * 60,
+    maxAge: age || 1000 * 60 * 60 * 24 * 60,
   };
 }

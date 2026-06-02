@@ -7,8 +7,13 @@ import { cookieOption } from 'src/func/cookie-option';
 export class AuthCookieService {
   constructor(private readonly refreshTokenService: RefreshTokenService) {}
 
-  setCookie(res: Response, cookieName: string, cookieToken: string) {
-    res.cookie(cookieName, cookieToken, cookieOption());
+  setCookie(
+    res: Response,
+    cookieName: string,
+    cookieToken: string,
+    age?: number,
+  ) {
+    res.cookie(cookieName, cookieToken, cookieOption(age));
   }
 
   clearCookie(res: Response, cookieName: string) {

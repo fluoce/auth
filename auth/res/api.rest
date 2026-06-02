@@ -106,6 +106,12 @@ Content-Type: application/json
 Authorization: Bearer <refresh-token>
 
 
+### refresh token (sets cookies in browser)
+POST http://localhost:3001/refresh/me/session
+Content-Type: application/json
+Authorization: Bearer <refresh-token>
+
+
 ### logout
 POST http://localhost:3001/logout
 Content-Type: application/json

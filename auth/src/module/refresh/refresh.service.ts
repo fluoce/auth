@@ -1,6 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import type { Response } from 'express';
 import { RefreshTokenService } from 'src/core/refresh-token/refresh-token.service';
+import { AuthCookieService } from 'src/lib/auth-cookie/auth-cookie.service';
 import { RedisService } from 'src/lib/redis/redis.service';
 import { RefreshTokenGraceData } from 'src/types/refreshToken.types';
 import { ResponseDataType } from 'src/types/response.type';
@@ -12,6 +14,7 @@ export class RefreshService {
     private readonly refreshTokenService: RefreshTokenService,
     private readonly jwtService: JwtService,
     private readonly redis: RedisService,
+    private readonly authCookie: AuthCookieService,
   ) {}
 
   async refresh(
@@ -70,6 +73,69 @@ export class RefreshService {
       message: 'token refresh successfully',
       accessToken,
       refreshToken,
+    };
+  }
+
+  async refreshForMeSession(
+    res: Response,
+    refreshTokenData: RefreshTokenGraceData,
+  ): Promise<ResponseDataType> {
+    let user: UserType | null = null;
+
+    let refreshToken: string | null = null;
+
+    if (refreshTokenData.isGrace) {
+      user = refreshTokenData.user;
+
+      refreshToken = await this.redis.get(
+        `grace-refresh:${refreshTokenData.refreshTokenId}`,
+      );
+    } else {
+      const result = await this.refreshTokenService.rotateRefreshToken(
+        refreshTokenData.refreshTokenId,
+        refreshTokenData.tokenHash,
+      );
+
+      if (!result || !result.refreshToken || !result.session) {
+        throw new InternalServerErrorException(
+          'Failed to rotate refresh token',
+        );
+      }
+
+      await this.redis.set(
+        `grace-refresh:${refreshTokenData.refreshTokenId}`,
+        result.refreshToken,
+        65,
+      );
+
+      user = result.session.user;
+
+      refreshToken = result.refreshToken;
+    }
+
+    if (!user || !refreshToken) {
+      throw new InternalServerErrorException('failed to create new session');
+    }
+
+    const payload = {
+      sub: user.id,
+      email: user?.email,
+      phone: user?.phone,
+    };
+
+    const accessToken = await this.jwtService.signAsync(payload);
+
+    if (!accessToken) {
+      throw new InternalServerErrorException('failed to create new session');
+    }
+
+    this.authCookie.setCookie(res, 'auth_rt', refreshToken);
+
+    this.authCookie.setCookie(res, 'accessToken', accessToken, 1000 * 60 * 15);
+
+    return {
+      message: 'token refresh successfully',
+      accessToken,
     };
   }
 }
