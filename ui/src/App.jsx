@@ -15,7 +15,7 @@ const App = () => {
         <Route path="/auth/verify" element={<Verify />} />
         <Route path="/auth/phone" element={<SingupWithPhone />} />
         <Route path="/auth/phone/verify" element={<VerifyPhone />} />
-        <Route path="/profile" element={<Profile />} />
+        {/* <Route path="/profile" element={<Profile />} /> */}
       </Routes>
     </div>
   );

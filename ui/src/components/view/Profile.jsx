@@ -25,7 +25,10 @@ const Profile = () => {
         <FormHeader title="Your Fluoce Profile" />
         <p className="p-0.5 text-xs font-medium text-zinc-700">
           Manage your profile settings below. You can change your name and
-          update your photo.
+          update your photo.{" "}
+          <span className="cursor-pointer text-blue-500 underline hover:text-blue-700">
+            switch account
+          </span>
         </p>
       </div>
       <div className="flex flex-col gap-4">
